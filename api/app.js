@@ -8,6 +8,9 @@ const MongoStore = require('connect-mongo');
 const flash = require('connect-flash');
 const storyRoutes = require('./routes/storyRoutes');
 const userRoutes = require('./routes/userRoutes');
+const passport = require('passport');
+require('./config/passport-setup'); // Adjust the path as necessary
+const authRoutes = require('./routes/authRoutes'); // Changed to match camelCase convention
 
 //create app
 const app = express();
@@ -52,6 +55,9 @@ app.use(express.urlencoded({extended: true}));
 app.use(morgan('tiny'));
 app.use(methodOverride('_method'));
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 //set up routes
 app.get('/', (req, res)=>{
     res.render('index');
@@ -60,6 +66,8 @@ app.get('/', (req, res)=>{
 app.use('/stories', storyRoutes);
 
 app.use('/users', userRoutes);
+
+app.use('/auth', authRoutes);
 
 app.use((req, res, next) => {
     let err = new Error('The server cannot locate ' + req.url);
